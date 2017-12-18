@@ -51,6 +51,8 @@ rootfs="$(jq -r '.params.rootfs // false' < $payload)"
 skip_download="$(jq -r '.params.skip_download // false' < $payload)"
 save="$(jq -r '.params.save // false' < $payload)"
 
+set_dockerd "$(jq -r '.source.dockerd // "{}"' < $payload)"
+
 mkdir -p $destination
 
 image_name="${repository}@${digest}"

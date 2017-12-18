@@ -179,6 +179,22 @@ set_client_certs() {
   done
 }
 
+set_dockerd() {
+  local raw_dockerd_block="${1}"
+  local host=$(echo $raw_dockerd_block | jq -r '.host // ""')
+  [ -n "$host" ] || return 0
+  local port=$(echo $raw_dockerd_block | jq -r '.port // 2376')
+  local key=$(echo $raw_dockerd_block | jq -r '.key // ""')
+  local cert=$(echo $raw_dockerd_block | jq -r '.cert // ""')
+  local ca=$(echo $raw_dockerd_block | jq -r '.ca // ""')
+  mkdir -p ~/.docker
+  [ -n "$key" ] && echo "$key" > ~/.docker/key.pem || true
+  [ -n "$cert" ] && echo "$cert" > ~/.docker/cert.pem || true
+  [ -n "$ca" ] && echo "$ca" > ~/.docker/ca.pem || true
+
+  export DOCKER_HOST=tcp://$host:$port DOCKER_TLS_VERIFY=1
+}
+
 docker_pull() {
   GREEN='\033[0;32m'
   RED='\033[0;31m'
