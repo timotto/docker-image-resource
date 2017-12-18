@@ -72,11 +72,15 @@ if [ "$skip_download" = "false" ]; then
   echo "$image_id" > ${destination}/image-id
   docker inspect $image_id > ${destination}/docker_inspect.json
 
-  docker run \
-    --cidfile=/tmp/container.cid \
-    -v /opt/resource/print-metadata:/tmp/print-metadata \
-    --entrypoint /tmp/print-metadata  \
-    "$image_name" > ${destination}/metadata.json
+  if [ -z "$DOCKER_HOST" ]; then
+    docker run \
+      --cidfile=/tmp/container.cid \
+      -v /opt/resource/print-metadata:/tmp/print-metadata \
+      --entrypoint /tmp/print-metadata  \
+      "$image_name" > ${destination}/metadata.json
+  else
+    echo "{}" > ${destination}/metadata.json
+  fi
 
   mkdir -p ${destination}/rootfs/
   docker export $(cat /tmp/container.cid) | tar --exclude="dev/*" -xf - -C ${destination}/rootfs/
