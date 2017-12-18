@@ -43,6 +43,7 @@ else
   registry=
 fi
 
+set_dockerd "$(jq -r '.source.dockerd // "{}"' < $payload)"
 certs_to_file "$ca_certs"
 set_client_certs "$client_certs"
 start_docker "$insecure_registries" "$registry_mirror"
