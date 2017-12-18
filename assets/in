@@ -85,16 +85,18 @@ if [ "$skip_download" = "false" ]; then
       -v /opt/resource/print-metadata:/tmp/print-metadata \
       --entrypoint /tmp/print-metadata  \
       "$image_name" > ${destination}/metadata.json
+
+    mkdir -p ${destination}/rootfs/
+    docker export $(cat /tmp/container.cid) | tar --exclude="dev/*" -xf - -C ${destination}/rootfs/
+
+    if [ "$rootfs" = "true" ]; then
+      docker export $(cat /tmp/container.cid) > ${destination}/rootfs.tar
+    fi
   else
+    mkdir -p ${destination}/rootfs/
     echo "{}" > ${destination}/metadata.json
   fi
 
-  mkdir -p ${destination}/rootfs/
-  docker export $(cat /tmp/container.cid) | tar --exclude="dev/*" -xf - -C ${destination}/rootfs/
-
-  if [ "$rootfs" = "true" ]; then
-    docker export $(cat /tmp/container.cid) > ${destination}/rootfs.tar
-  fi
 fi
 
 echo "$repository" > ${destination}/repository
