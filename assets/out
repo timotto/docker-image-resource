@@ -106,7 +106,7 @@ elif [ -n "$build" ]; then
       "$(cat "${load_base}/repository"):$(cat "${load_base}/tag")"
   fi
 
-  cache_from=""
+  cache_from="--no-cache"
   if [ "$cache" = "true" ]; then
     docker_pull "${repository}:${cache_tag}"
     cache_from="--cache-from ${repository}:${cache_tag}"
